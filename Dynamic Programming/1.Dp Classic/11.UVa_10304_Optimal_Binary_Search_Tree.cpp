@@ -27,44 +27,43 @@ template<typename T> using pbds = tree<T, null_type, less<T>, rb_tree_tag ,tree_
 
 const int mod = 1e9 + 7;
 const int MOD = 998244353;
-const int N   = 5e5 + 5;
+const int N   = 300;
 
+int n, a[N], pref[N], dp[N][N];
 
+int sum(int l, int r){
+	if(l > r) return 0;
+	int res = pref[r];
+	if(l - 1 >= 0){
+		res -= pref[l - 1];
+	}
+	return res;
+}
+
+int f(int l, int r){
+	if(l >= r){
+		return 0;		
+	}
+	if(dp[l][r] != -1) return dp[l][r];
+	int ans = 1e18;
+	for(int i = l; i <= r; i++){
+		int curr = f(l, i - 1) + f(i + 1, r);
+		curr += sum(l, i - 1) + sum(i + 1, r);
+		ans = min(ans, curr);
+	}
+	return dp[l][r] = ans;
+}
 
 int32_t main(){
-    // freopen("input.txt", "r", stdin);
-
-	auto LCS = [&](vector<int> &a, vector<int> &b){
-		int n = a.size();
-		int m = b.size();
-		int dp[n + 1][m + 1] = {};
-		for(int i = 1; i <= n; i++){
-			for(int j = 1; j <= m; j++){
-				if(a[i - 1] == b[j - 1]){
-					dp[i][j] = dp[i - 1][j - 1] + 1;
-				}else{
-					dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
-				}				
-			}
+    while(cin >> n){
+		for(int i = 0; i < n; i++){
+			cin >> a[i];
 		}
-		return dp[n][m];
-	};
-
-	int n; cin >> n;
-	vector<int> a(n);
-	for(int i = 0; i < n; i++){
-		int x; cin >> x;
-		a[x - 1] = i;
-	}
-	vector<int> b(n);
-	int x;
-	while(cin >> x){
-		b[x - 1] = 0;
+		pref[0] = a[0];
 		for(int i = 1; i < n; i++){
-			int x; cin >> x;
-			b[x - 1] = i;
+			pref[i] = pref[i - 1] + a[i];
 		}
-		cout << LCS(a, b) << endl;
-	}
-
+		memset(dp, -1, sizeof dp);
+		cout << f(0, n - 1) << endl;
+    }
 }

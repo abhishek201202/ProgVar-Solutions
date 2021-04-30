@@ -27,44 +27,46 @@ template<typename T> using pbds = tree<T, null_type, less<T>, rb_tree_tag ,tree_
 
 const int mod = 1e9 + 7;
 const int MOD = 998244353;
-const int N   = 5e5 + 5;
+const int N   = 5e4 + 5;
 
+
+void test_cases(){
+	int n; cin >> n;
+	vector<int> a(n);
+	int s = 0;
+	for(int i = 0; i < n; i++){
+		cin >> a[i];
+		s += a[i];
+	}
+	int dp[n + 1][N] = {};
+	dp[0][0] = 1;
+	for(int i = 1; i <= n; i++){
+		for(int w = 0; w < N; w ++){
+			dp[i][w] = dp[i - 1][w];
+			if(w - a[i - 1] >= 0){
+				dp[i][w] |= dp[i - 1][w - a[i - 1]];
+			}
+		}
+	}
+
+	for(int i = s/2; i >= 0; i--){
+		if(dp[n][i]){
+			s -= 2 * i;
+			break;
+		}
+	}
+	cout << s << endl;
+}
 
 
 int32_t main(){
+    ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
     // freopen("input.txt", "r", stdin);
-
-	auto LCS = [&](vector<int> &a, vector<int> &b){
-		int n = a.size();
-		int m = b.size();
-		int dp[n + 1][m + 1] = {};
-		for(int i = 1; i <= n; i++){
-			for(int j = 1; j <= m; j++){
-				if(a[i - 1] == b[j - 1]){
-					dp[i][j] = dp[i - 1][j - 1] + 1;
-				}else{
-					dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
-				}				
-			}
-		}
-		return dp[n][m];
-	};
-
-	int n; cin >> n;
-	vector<int> a(n);
-	for(int i = 0; i < n; i++){
-		int x; cin >> x;
-		a[x - 1] = i;
-	}
-	vector<int> b(n);
-	int x;
-	while(cin >> x){
-		b[x - 1] = 0;
-		for(int i = 1; i < n; i++){
-			int x; cin >> x;
-			b[x - 1] = i;
-		}
-		cout << LCS(a, b) << endl;
-	}
-
+    // freopen("output.txt", "w", stdout);
+    int tt = 1;
+    cin >> tt;
+    for(int T = 1; T <= tt; T++){
+        // cerr << endl << "Case #" << T << ": " << endl;
+        test_cases();
+    }
 }
